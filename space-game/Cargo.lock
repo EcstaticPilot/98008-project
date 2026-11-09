@@ -3,13 +3,6 @@
 version = 4
 
 [[package]]
-name = "SpaceGame"
-version = "0.1.0"
-dependencies = [
- "bevy",
-]
-
-[[package]]
 name = "ab_glyph"
 version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -446,6 +439,7 @@ version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78a6c6136c38a50f3d20069adb99064636afcb109cbdf27a00a8c1742f5d630c"
 dependencies = [
+ "bevy_dylib",
  "bevy_internal",
 ]
 
@@ -803,6 +797,15 @@ dependencies = [
  "log",
  "serde",
  "sysinfo",
+]
+
+[[package]]
+name = "bevy_dylib"
+version = "0.20.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f3a45f45f8196c87013bf694a4603f70e894e2acfaa5b0c737c3dda7eeef3df"
+dependencies = [
+ "bevy_internal",
 ]
 
 [[package]]
@@ -4976,6 +4979,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd538fb6910ac1099850255cf94a94df6551fbdd602454387d0adb2d1ca6dead"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "space-game"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
