@@ -1,4 +1,6 @@
-use bevy::{color::palettes::basic::PURPLE, input::keyboard, math::EulerRot::ZXY, prelude::*};
+use bevy::{color::palettes::basic::PURPLE,
+    math::EulerRot::ZXY, prelude::*};
+
 #[derive(Component)]
 struct Player;
 
@@ -13,7 +15,9 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+
     commands.spawn(Camera2d);
+
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(50.0, 100.0))),
         MeshMaterial2d(materials.add(Color::from(PURPLE))),
@@ -32,7 +36,7 @@ fn steer_ship(
         direction_x += 5.0;
     }
     if keyboard_input.pressed(KeyCode::KeyS) {
-        direction_x -= 5.0;
+        direction_x -= 2.5;
     }
     if keyboard_input.pressed(KeyCode::KeyA) {
         direction_y += 0.1;
@@ -44,7 +48,8 @@ fn steer_ship(
         let clamped_velocity = ship_transform
             .1
             .0
-            .clamp(vec3(-5.0, -5.0, -0.1), vec3(5.0, 5.0, 0.1));
+            //.clamp(vec3(-5.0, -5.0, -0.1), vec3(5.0, 5.0, 0.1));
+            .clamp(vec3(0.0, 0.0, -0.1), vec3(0.0, 0.0, 0.1));
         ship_transform.1.0 -= clamped_velocity;
     }
     ship_transform.1.0.y += direction_x * (ship_transform.0.rotation.to_euler(ZXY).0).cos();
