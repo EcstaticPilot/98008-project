@@ -1,5 +1,4 @@
-use bevy::{color::palettes::basic::PURPLE,
-    math::EulerRot::ZXY, prelude::*};
+use bevy::{color::palettes::basic::PURPLE, math::EulerRot::ZXY, prelude::*};
 
 #[derive(Component)]
 struct Player;
@@ -10,12 +9,14 @@ struct Ship;
 #[derive(Component)]
 struct Velocity(Vec3);
 
+#[derive(Component)]
+struct Laser;
+
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-
     commands.spawn(Camera2d);
 
     commands.spawn((
@@ -61,7 +62,37 @@ fn move_ships(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time>) {
         transform.translation.x += velocity.0.x * time.delta_secs();
         transform.translation.y += velocity.0.y * time.delta_secs();
         transform.rotate_z(velocity.0.z * time.delta_secs());
-        println!("{}", transform.rotation.to_euler(ZXY).0);
+    }
+}
+
+fn shoot_laser(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    ship_transform: Single<&Transform, With<Player>>,
+) {
+    if !keyboard_input.just_pressed(KeyCode::KeyF) {
+        return;
+    }
+
+    let forward = ship_transform.rotation * Vec3::Y;
+    let laser_position = ship_transform.translation + forward * 65.0;
+
+    commands.spawn((
+        Mesh2d(meshes.add(Rectangle::new(10.0, 30.0))),
+        MeshMaterial2d(materials.add(Color::srgb(1.0, 0.1, 0.1))),
+        Laser,
+        Velocity(forward * 500.0),
+        Transform::from_translation(laser_position).with_rotation(ship_transform.rotation),
+    ));
+}
+
+fn remove_distant_lasers(mut commands: Commands, lasers: Query<(Entity, &Transform), With<Laser>>) {
+    for (entity, transform) in &lasers {
+        if transform.translation.x.abs() > 1000.0 || transform.translation.y.abs() > 1000.0 {
+            commands.entity(entity).despawn();
+        }
     }
 }
 
@@ -69,6 +100,9 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (steer_ship, move_ships).chain())
+        .add_systems(
+            Update,
+            (steer_ship, shoot_laser, move_ships, remove_distant_lasers).chain(),
+        )
         .run();
 }
